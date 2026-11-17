@@ -1,0 +1,28 @@
+# Render.com Blueprint - Matiz Squad Chat (Free Tier - NO DISK)
+services:
+  - type: web
+    name: matiz-chat
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DB_PATH
+        value: /tmp/matiz.db
+      - key: JWT_SECRET
+        generateValue: true
+    
+    healthCheckPath: /healthz
+    autoDeploy: true
+
+# Для постоянного хранения добавь PostgreSQL позже:
+# databases:
+#   - name: matiz-db
+#     plan: free
+#     databaseName: matiz
+#     user: matiz

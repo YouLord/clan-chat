@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1e1f22">
+  <meta name="description" content="Matiz Squad — чат с голосовыми каналами">
+  <title>Matiz Squad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="screen" role="main">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <svg viewBox="0 0 256 256" width="64" height="64"><use href="#logo-icon"/></svg>
+        </div>
+        <h1>Matiz Squad</h1>
+        <p class="auth-subtitle">Войди или зарегистрируйся</p>
+        
+        <div class="auth-tabs" role="tablist">
+          <button role="tab" id="tab-login" class="auth-tab active" aria-selected="true" aria-controls="panel-login">Вход</button>
+          <button role="tab" id="tab-register" class="auth-tab" aria-selected="false" aria-controls="panel-register">Регистрация</button>
+        </div>
+        
+        <div class="auth-panels">
+          <div role="tabpanel" id="panel-login" class="auth-panel active">
+            <form id="login-form" novalidate>
+              <div class="form-group">
+                <label for="login-username">Ник</label>
+                <input type="text" id="login-username" name="username" autocomplete="username" required minlength="2" maxlength="32" pattern="[a-zA-Z0-9_-]+" placeholder="Твой ник">
+              </div>
+              <div class="form-group">
+                <label for="login-password">Пароль</label>
+                <input type="password" id="login-password" name="password" autocomplete="current-password" required minlength="4" placeholder="Пароль">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            </form>
+          </div>
+          
+          <div role="tabpanel" id="panel-register" class="auth-panel">
+            <form id="register-form" novalidate>
+              <div class="form-group">
+                <label for="reg-username">Ник</label>
+                <input type="text" id="reg-username" name="username" autocomplete="username" required minlength="2" maxlength="32" pattern="[a-zA-Z0-9_-]+" placeholder="Придумай ник">
+                <span class="form-hint">Только буквы, цифры, _ и -</span>
+              </div>
+              <div class="form-group">
+                <label for="reg-password">Пароль</label>
+                <input type="password" id="reg-password" name="password" autocomplete="new-password" required minlength="4" placeholder="Придумай пароль">
+              </div>
+              <div class="form-group">
+                <label for="reg-password2">Повтори пароль</label>
+                <input type="password" id="reg-password2" name="password2" autocomplete="new-password" required placeholder="Ещё раз">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Создать аккаунт</button>
+            </form>
+          </div>
+        </div>
+        
+        <p id="auth-error" class="auth-error" aria-live="polite"></p>
+      </div>
+    </div>
+    
+    <!-- Main App Screen -->
+    <div id="main-screen" class="screen hidden" role="application">
+      <!-- Sidebar: Servers/Channels -->
+      <aside id="sidebar" class="sidebar" aria-label="Каналы">
+        <div class="sidebar-header">
+          <button id="sidebar-toggle" class="icon-btn" aria-label="Скрыть каналы" title="Скрыть каналы (Ctrl+Shift+S)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+          </button>
+          <div class="guild-info">
+            <div class="guild-avatar" id="guild-avatar"><svg viewBox="0 0 256 256" width="32" height="32"><use href="#logo-icon"/></svg></div>
+            <span class="guild-name">Matiz Squad</span>
+          </div>
+        </div>
+        
+        <div class="channel-categories" id="channel-categories" role="navigation" aria-label="Категории каналов"></div>
+        
+        <div class="sidebar-footer">
+          <div class="user-panel" id="user-panel">
+            <div class="user-avatar" id="user-avatar"></div>
+            <div class="user-info">
+              <span class="user-name" id="user-name"></span>
+              <span class="user-status" id="user-status"><span class="status-dot online"></span> Онлайн</span>
+            </div>
+            <button id="user-settings" class="icon-btn" aria-label="Настройки" title="Настройки (Ctrl+,)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Main Chat Area -->
+      <main id="chat-main" class="chat-main" role="main">
+        <!-- Channel Header -->
+        <header id="channel-header" class="channel-header">
+          <div class="channel-info">
+            <span class="channel-type-icon" id="channel-type-icon"></span>
+            <h2 id="channel-name">Выбери канал</h2>
+            <span class="channel-topic" id="channel-topic"></span>
+          </div>
+          <div class="channel-actions">
+            <button id="voice-join-btn" class="btn btn-voice hidden" aria-label="Войти в голосовой канал">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="19" x2="8" y2="22"/><line x1="16" y1="19" x2="16" y2="22"/></svg>
+              <span>Войти</span>
+            </button>
+            <button id="search-btn" class="icon-btn" aria-label="Поиск" title="Поиск (Ctrl+K)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <button id="pin-btn" class="icon-btn" aria-label="Закреплённые" title="Закреплённые сообщения (Ctrl+Shift+P)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"/></svg>
+            </button>
+            <button id="members-btn" class="icon-btn" aria-label="Участники" title="Участники канала">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </button>
+          </div>
+        </header>
+        
+        <!-- Messages Area -->
+        <div id="messages-area" class="messages-area" role="log" aria-live="polite" aria-label="Сообщения">
+          <div id="messages-container" class="messages-container"></div>
+          <div id="new-messages-bar" class="new-messages-bar hidden" aria-live="polite">
+            <button class="btn btn-sm">Новые сообщения ↓</button>
+          </div>
+        </div>
+        
+        <!-- Message Input -->
+        <footer id="message-input-area" class="message-input-area hidden">
+          <div class="input-wrapper">
+            <button id="attach-btn" class="icon-btn" aria-label="Вложение" title="Прикрепить файл">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05a9 9 0 0 1-12.92 0"/><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M18 13v-5"/><path d="M13 18v-5"/><path d="M8 13v-5"/></svg>
+            </button>
+            <div class="input-container">
+              <textarea 
+                id="message-input" 
+                placeholder="Сообщение #general" 
+                aria-label="Сообщение"
+                rows="1"
+                data-autoresize="true"
+              ></textarea>
+              <div id="reply-preview" class="reply-preview hidden" aria-live="polite"></div>
+            </div>
+            <button id="send-btn" class="icon-btn" aria-label="Отправить" title="Отправить (Enter), Новая строка (Shift+Enter)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div class="input-hints">
+            <kbd>Enter</kd> — отправить · <kbd>Shift+Enter</kbd> — новая строка · <kbd>↑</kbd> — редактировать последнее · <kbd>Ctrl+K</kbd> — поиск
+          </div>
+        </footer>
+      </main>
+      
+      <!-- Right Sidebar: Members / Pins / Search -->
+      <aside id="right-sidebar" class="right-sidebar hidden" aria-label="Панель участников">
+        <div class="right-sidebar-tabs" role="tablist">
+          <button role="tab" class="rs-tab active" data-tab="members" aria-selected="true">Участники</button>
+          <button role="tab" class="rs-tab" data-tab="pins" aria-selected="false">Закреплённые</button>
+          <button role="tab" class="rs-tab" data-tab="search" aria-selected="false">Поиск</button>
+        </div>
+        <div class="right-sidebar-panels">
+          <div role="tabpanel" class="rs-panel active" data-panel="members">
+            <div class="members-list" id="members-list"></div>
+            <div class="voice-users" id="voice-users" hidden></div>
+          </div>
+          <div role="tabpanel" class="rs-panel" data-panel="pins">
+            <div class="pins-list" id="pins-list">Нет закреплённых сообщений</div>
+          </div>
+          <div role="tabpanel" class="rs-panel" data-panel="search">
+            <input type="search" id="search-input" placeholder="Поиск сообщений..." aria-label="Поиск">
+            <div class="search-results" id="search-results"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+    
+    <!-- Voice Connection Modal -->
+    <div id="voice-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="voice-modal-title">
+      <div class="modal-content voice-modal-content">
+        <header class="modal-header">
+          <h3 id="voice-modal-title">Голосовой канал</h3>
+          <button class="icon-btn modal-close" aria-label="Закрыть">&times;</button>
+        </header>
+        <div class="voice-setup">
+          <div class="setup-section">
+            <h4>Устройства</h4>
+            <div class="device-selector">
+              <label>Микрофон</label>
+              <select id="mic-select" aria-label="Выбор микрофона"></select>
+            </div>
+            <div class="device-selector">
+              <label>Наушники</label>
+              <select id="speaker-select" aria-label="Выбор наушников"></select>
+            </div>
+            <div class="device-selector">
+              <label>Камера (опционально)</label>
+              <select id="camera-select" aria-label="Выбор камеры"></select>
+            </div>
+          </div>
+          
+          <div class="setup-section">
+            <h4>Настройки звука</h4>
+            <label class="toggle">
+              <input type="checkbox" id="noise-suppression" checked>
+              <span class="toggle-slider"></span>
+              <span>Шумоподавление (RNNoise)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="echo-cancellation" checked>
+              <span class="toggle-slider"></span>
+              <span>Эхоподавление</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="auto-gain" checked>
+              <span class="toggle-slider"></span>
+              <span>Автогейн</span>
+            </label>
+          </div>
+          
+          <div class="setup-section">
+            <h4>Режим входа</h4>
+            <div class="radio-group">
+              <label class="radio">
+                <input type="radio" name="voice-mode" value="voice" checked>
+                <span>Voice Activity (по голосу)</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="voice-mode" value="ptt">
+                <span>Push-to-Talk (клавиша)</span>
+              </label>
+            </div>
+            <div id="ptt-setting" class="hidden">
+              <label>Клавиша PTT</label>
+              <input type="text" id="ptt-key" readonly placeholder="Нажми клавишу..." aria-label="Клавиша Push-to-Talk">
+            </div>
+          </div>
+          
+          <div class="voice-preview">
+            <h4>Тест микрофона</h4>
+            <div class="mic-meter" id="mic-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="mic-meter-fill" id="mic-meter-fill"></div>
+            </div>
+            <button id="test-mic-btn" class="btn btn-secondary">Начать тест</button>
+          </div>
+        </div>
+        <footer class="modal-footer">
+          <button id="voice-join-confirm" class="btn btn-primary">Войти в канал</button>
+          <button id="voice-leave-btn" class="btn btn-danger hidden">Выйти из канала</button>
+        </footer>
+      </div>
+    </div>
+    
+    <!-- Toasts Container -->
+    <div id="toasts" class="toasts" aria-live="polite" aria-label="Уведомления"></div>
+    
+    <!-- SVG Icons Sprite -->
+    <svg style="display:none" aria-hidden="true">
+      <symbol id="logo-icon" viewBox="0 0 256 256">
+        <defs>
+          <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#5865F2"/>
+            <stop offset="100%" stop-color="#4752C4"/>
+          </linearGradient>
+          <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#DCDFE4"/>
+          </linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <circle cx="128" cy="128" r="120" fill="url(#bgGrad)" filter="url(#glow)"/>
+        <text x="128" y="158" font-family="system-ui, sans-serif" font-size="110" font-weight="800" fill="url(#textGrad)" text-anchor="middle" letter-spacing="-2" filter="url(#glow)">M</text>
+        <text x="128" y="200" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF" text-anchor="middle" opacity="0.9">SQUAD</text>
+        <g opacity="0.3" fill="#FFFFFF">
+          <path d="M 70 128 Q 60 110 70 92 Q 80 110 70 128"/>
+          <path d="M 60 128 Q 45 95 60 70 Q 75 95 60 128"/>
+          <path d="M 186 128 Q 196 110 186 92 Q 176 110 186 128"/>
+          <path d="M 196 128 Q 211 95 196 70 Q 181 95 196 128"/>
+        </g>
+      </symbol>
+    </svg>
+  </div>
+  
+  <script src="/socket.io/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
